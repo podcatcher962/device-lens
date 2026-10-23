@@ -1,0 +1,19 @@
+# 打包产物
+设备诊断修复/
+*.zip
+
+# 自测截图
+_shot_*.png
+
+# 报告
+设备诊断报告.txt
+Device-Report.txt
+DeviceLens-error.txt
+
+# 系统与编辑器
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+__pycache__/
+*.pyc
