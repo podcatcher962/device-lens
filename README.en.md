@@ -3,7 +3,7 @@
 > USB drives, memory cards, portable disks, serial cards — anything plugged into this PC.
 > **See which layer is broken before you touch anything.**
 
-Author: **© Lanlan Eternal**　·　Version: **v0.2.1**　·　Windows 7 / 10 / 11, 32-bit and 64-bit
+Author: **© Lanlan Eternal**　·　Version: **v0.2.2**　·　Windows 7 / 10 / 11, 32-bit and 64-bit
 Portable, no installer · no network · scanning is **read-only**; two repairs, both reversible
 
 ![Screenshot](docs/screenshot-en.png)
@@ -111,7 +111,7 @@ download site.
 
 ---
 
-## Features (v0.2.1)
+## Features (v0.2.2)
 
 - **Read-only check** linking four layers: device / disk / volume / drive letter
 - **Four views**: key items, all devices, problems only, **hardware**
@@ -137,13 +137,23 @@ download site.
 
 ## Quick start
 
-1. Download `device-lens.zip` from [Releases](../../releases/latest)
-2. **Extract the whole archive** to any folder (do not double-click inside the zip)
-3. Run `请双击这个-设备诊断修复.bat`
-4. Plug in the misbehaving device → press the green **Full check** → click any row
+**Just want one file to double-click:**
 
-No administrator rights needed. Only "Rescan" needs them, and the UI offers a
-one-click restart with elevation when that happens.
+1. Download **`DeviceLens-v0.2.2.exe`** from [Releases](../../releases/latest)
+2. Double-click it. No unzip, no installer, no network
+
+**Want the source next to it, or want to audit it first:**
+
+1. Download `device-lens-v0.2.2.zip`
+2. **Extract the whole archive** to any folder (not inside the zip)
+3. Run `设备诊断修复.exe`, or `请双击这个-设备诊断修复.bat` — same script
+   either way, and `_program/` holds the full source
+
+**Then:** plug in the misbehaving device → press the green **Full check** →
+click any row.
+
+No administrator rights needed. Only "Rescan" and the two repairs need them;
+the UI asks, and can restart itself elevated in one click.
 
 ---
 
@@ -212,6 +222,7 @@ overwrites files. This program refuses to start if the other tool's files are pr
 
 | Version | Content |
 |---|---|
+| **v0.2.2** | Single-file exe: icon, version info, PerMonitorV2 DPI · "restart as administrator" now restarts the exe itself · `.config` floor relaxed from .NET 4.7 to any 4.x |
 | **v0.2.1** | Repair added: assign a drive letter / re-enable a device, both reversible · undo and repair-log menus · last two Chinese leaks in the English UI fixed · stray `{n}` placeholders fixed |
 | **v0.1.0** | Read-only check, four-layer view, layer judgement, 22 error codes, drive letter map, device history, rescan, report export, bilingual UI |
 

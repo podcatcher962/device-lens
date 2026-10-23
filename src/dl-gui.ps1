@@ -1,14 +1,15 @@
 ﻿# =====================================================================
 #  设备诊断修复 · DeviceLens —— 图形界面
-#  版本 0.1.0      作者：永远的兰兰
+#  版本 0.2.2      作者：永远的兰兰
 #
-#  用法：双击「请双击这个-设备诊断修复.bat」
+#  用法：双击「设备诊断修复.exe」，或双击 bat（脚本版，内容完全一样）
 #  参数：-Lang zh|en     强制界面语言
 #        -Shot <png>      截图后退出（自测用）
 #        -AutoScan        启动即体检（自测用）
 #
-#  v0.1.0 全部只读：不写注册表、不写盘、不卸载任何设备。
-#  唯一的"动作"是「重新识别」，等价于设备管理器里点一下「扫描检测硬件改动」。
+#  体检全程只读：不写注册表、不写盘、不卸载任何设备。
+#  修复只做两种、且都可撤销：给数据分区分配盘符、重新启用被禁用的设备。
+#  每一处「没有盘符」都要先判分区身份 —— EFI / MSR / 恢复分区本来就没有盘符。
 # =====================================================================
 param(
     [string]$Lang = '',
@@ -1490,15 +1491,34 @@ function Invoke-Rescan {
     Invoke-Scan
 }
 
+function Get-SelfLaunch {
+    # 同一个界面文件有两种活法：
+    #   · 双击 bat  → 宿主进程是 powershell.exe，重启要走 powershell -File 脚本
+    #   · 双击 exe  → 宿主进程就是本程序，重启必须回到 exe 自己
+    #                  （ps2exe 跑脚本时用的是临时解压目录，再去跑那个脚本
+    #                    等于绕开 exe，用户看到的现象是「又开了一个，但没提权」）
+    $proc = ''
+    try { $proc = [string][System.Diagnostics.Process]::GetCurrentProcess().MainModule.FileName } catch { }
+    $langArg = ''
+    if ($script:LANG -ne '') { $langArg = ' -Lang ' + $script:LANG }
+
+    if ($proc -ne '' -and $proc -notmatch '(?i)powershell') {
+        return @{ File = $proc; Args = $langArg.Trim() }
+    }
+    return @{
+        File = 'powershell.exe'
+        Args = ('-NoProfile -ExecutionPolicy Bypass -File "' + $PSCommandPath + '"' + $langArg)
+    }
+}
+
 function Restart-Elevated {
     try {
-        $a = '-NoProfile -ExecutionPolicy Bypass -File "' + $PSCommandPath + '"'
-        if ($script:LANG -ne '') { $a += ' -Lang ' + $script:LANG }
-        Start-Process -FilePath 'powershell.exe' -ArgumentList $a -Verb RunAs -ErrorAction Stop | Out-Null
+        $sl = Get-SelfLaunch
+        Start-Process -FilePath $sl.File -ArgumentList $sl.Args -Verb RunAs -ErrorAction Stop | Out-Null
         $form.Close()
     } catch {
         [System.Windows.Forms.MessageBox]::Show(
-            "没能以管理员身份重新打开（可能在 UAC 窗口里点了「否」）。`r`n请关掉本程序，右键那个 bat 文件，选「以管理员身份运行」。",
+            "没能以管理员身份重新打开（可能在 UAC 窗口里点了「否」）。`r`n`r`n请关掉本程序，然后右键这个程序文件，选「以管理员身份运行」。",
             'DeviceLens', 'OK', 'Warning') | Out-Null
     }
 }
